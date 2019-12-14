@@ -82,7 +82,7 @@ if __name__ == '__main__':
 			torch.save(linear.state_dict(), './linear_latest.pth')
 
 			_, imgs, lbls = next(val_data_loader)
-			features = netG(imgs.cuda())
+			features = netG(imgs.cuda()).permute(0, 2, 3, 1)
 			logits = linear(features).reshape(-1, 40)
 			lbls = lbls.long().cuda().reshape(-1)
 			loss = criterion(logits, lbls)
