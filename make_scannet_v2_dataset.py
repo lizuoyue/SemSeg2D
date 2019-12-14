@@ -78,7 +78,7 @@ for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names
 		os.makedirs(dst_label_path % (tv, scene_name), exist_ok=True)
 		for label_file in label_files:
 			basename = os.path.basename(label_file)
-			label = vf(np.array(Image.open(label_file)).astype(np.int32))
+			label = np.array(Image.open(label_file)).astype(np.int32)
 			label = Image.fromarray(label.astype(np.uint8))
 			label.putpalette(tab20_palette)
 			label.save(dst_label_path % (tv, scene_name) + '/' + basename)
