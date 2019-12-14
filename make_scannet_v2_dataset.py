@@ -75,8 +75,7 @@ for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names
 	for scene_name in tqdm.tqdm(scene_names):
 		os.popen('cp -r %s %s' % (src_image_path % scene_name, dst_image_path % (tv, scene_name)))
 		label_files = sorted(glob.glob(src_label_path % scene_name + '*.png'))
-		os.popen('mkdir -p ' + dst_label_path % (tv, scene_name))
-		time.sleep(0.2)
+		os.makedirs(dst_label_path % (tv, scene_name), exist_ok=True)
 		for label_file in label_files:
 			basename = os.path.basename(label_file)
 			label = np.array(Image.open(label_file)).astype(np.int32)
