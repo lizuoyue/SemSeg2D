@@ -63,16 +63,17 @@ if __name__ == '__main__':
 		it, imgs, lbls = next(train_data_loader)
 		features = netG(imgs.cuda()).permute(0, 2, 3, 1)
 		logits = linear(features).reshape(-1, 40)
-		loss = criterion(logits, lbls.long().cuda().reshape(-1))
+		lbls = lbls.long().cuda().reshape(-1)
+		loss = criterion(logits, lbls)
 
 		loss.backward()
 		optimizer.step()
 
-		pred = torch.argmax(logits, dim=-1).cpu().numpy()
-		lbls = lbls.cpu().numpy()
-		acc = (pred == lbls)[lbls < 255]
+		# pred = torch.argmax(logits, dim=-1).cpu().numpy()
+		# lbls = lbls.cpu().numpy()
+		# acc = (pred == lbls)[lbls < 255] , acc.mean()
 
-		print('train', it, loss.item(), acc.mean(), flush=True)
+		print('train', it, loss.item(), flush=True)
 
 		if it % 5000 == batch_size:
 			torch.save(netG.state_dict(), './netG_%d.pth' % it)
@@ -84,11 +85,11 @@ if __name__ == '__main__':
 			features = netG(imgs.cuda())
 			logits = linear(features)
 			loss = criterion(logits, lbls)
-			pred = torch.argmax(logits, dim=-1).cpu().numpy()
-			lbls = lbls.cpu().numpy()
-			acc = (pred == lbls)[lbls < 255]
+			# pred = torch.argmax(logits, dim=-1).cpu().numpy()
+			# lbls = lbls.cpu().numpy()
+			# acc = (pred == lbls)[lbls < 255], acc.mean()
 
-			print('val', it, loss.item(), acc.mean(), flush=True)
+			print('val', it, loss.item(), flush=True)
 
 
 
