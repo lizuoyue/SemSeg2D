@@ -83,7 +83,8 @@ if __name__ == '__main__':
 
 			_, imgs, lbls = next(val_data_loader)
 			features = netG(imgs.cuda())
-			logits = linear(features)
+			logits = linear(features).reshape(-1, 40)
+			lbls = lbls.long().cuda().reshape(-1)
 			loss = criterion(logits, lbls)
 			# pred = torch.argmax(logits, dim=-1).cpu().numpy()
 			# lbls = lbls.cpu().numpy()
