@@ -62,7 +62,7 @@ if __name__ == '__main__':
 		optimizer.zero_grad()
 		it, imgs, lbls = next(train_data_loader)
 		features = netG(imgs.cuda()).permute(0, 2, 3, 1)
-		logits = linear(features).reshape(-1)
+		logits = linear(features).reshape(-1, 40)
 		loss = criterion(logits, lbls.long().cuda().reshape(-1))
 
 		loss.backward()
