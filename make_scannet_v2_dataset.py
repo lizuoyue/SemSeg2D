@@ -71,6 +71,7 @@ dst_image_path = '/local/zoli/SemSeg2D/datasets/scannet_v2/%s/images/%s'
 dst_label_path = '/local/zoli/SemSeg2D/datasets/scannet_v2/%s/labels/%s'
 
 for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names]):
+	os.popen('mkdir -p /local/zoli/SemSeg2D/datasets/scannet_v2/%s/images' % tv)
 	for scene_name in tqdm.tqdm(scene_names):
 		os.popen('cp -r %s %s' % (src_image_path % scene_name, dst_image_path % (tv, scene_name)))
 		label_files = sorted(glob.glob(src_label_path % scene_name + '*.png'))
