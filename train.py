@@ -23,7 +23,7 @@ def create_data_loader(batch_size, mode, init_idx=0, seed=7):
 	lbls = sorted(glob.glob('/local/zoli/SemSeg2D/datasets/scannet_v2/%s/labels/*/*.png' % mode))
 	assert(len(imgs) == len(lbls))
 	for img, lbl in tqdm.tqdm(list(zip(imgs, lbls))):
-		assert(os.path.basename(img).replace('.jpg') == os.path.basename(lbl).replace('.png'))
+		assert(os.path.basename(img).replace('.jpg', '') == os.path.basename(lbl).replace('.png', ''))
 	pairs = list(zip(imgs, lbls))
 	random.seed(seed)
 	random.shuffle(pairs)
