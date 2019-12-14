@@ -82,6 +82,6 @@ for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names
 			label = np.array(Image.open(label_file)).astype(np.int32)
 			label = Image.fromarray(label.astype(np.uint8))
 			label.putpalette(tab20_palette)
-			tab20_palette.save(dst_label_path % (tv, scene_name) + '/' + basename)
+			label.save(dst_label_path % (tv, scene_name) + '/' + basename)
 
 
