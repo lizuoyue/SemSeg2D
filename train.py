@@ -67,12 +67,6 @@ if __name__ == '__main__':
 		optimizer.zero_grad()
 		it, imgs, lbls = next(train_data_loader)
 
-		print(it, imgs.shape, lbls.shape)
-		print(imgs.cpu().numpy())
-		print(lbls.cpu().numpy())
-
-		input()
-
 		features = netG(imgs.cuda()).permute(0, 2, 3, 1)
 		print(features.shape)
 		logits = linear(features.reshape(-1, feature_dim))
@@ -85,11 +79,13 @@ if __name__ == '__main__':
 		loss.backward()
 		optimizer.step()
 
-		# pred = torch.argmax(logits, dim=-1).cpu().numpy()
-		# lbls = lbls.cpu().numpy()
-		# acc = (pred == lbls)[lbls < 255] , acc.mean()
+		pred = torch.argmax(logits, dim=-1).cpu().numpy()
+		lbls = lbls.cpu().numpy()
+		eq = (pred == lbls)
+		print(eq.shape, 'eq')
+		acc = eq[lbls > -1]
 
-		print('train', it, loss.item(), flush=True)
+		print('train', it, loss.item(), acc.mean(), flush=True)
 
 		if it % 5000 == 100000:
 			torch.save(netG.state_dict(), './netG_%d.pth' % it)
