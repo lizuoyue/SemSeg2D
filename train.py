@@ -36,6 +36,17 @@ def create_data_loader(batch_size, mode, device='cuda:0', init_idx=0, seed=7):
 		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).long().to(device)
 
 
+def miou(gt, dt, num_classes):
+	res = []
+	for i in range(num_classes):
+		gt_mask = gt == i
+		dt_mask = dt == i
+		sum_i = (gt_mask & dt_mask).sum()
+		sum_u = (gt_mask | dt_mask).sum()
+		if sum_u != 0:
+			res.append(sum_i / sum_u)
+	return np.array(res).mean()
+
 
 if __name__ == '__main__':
 
@@ -68,12 +79,8 @@ if __name__ == '__main__':
 		it, imgs, lbls = next(train_data_loader)
 
 		features = netG(imgs.cuda()).permute(0, 2, 3, 1)
-		print(features.shape)
 		logits = linear(features.reshape(-1, feature_dim))
-		print(logits.shape)
-
 		lbls = lbls.reshape(-1)
-		print(lbls.shape)
 		loss = criterion(logits, lbls)
 
 		loss.backward()
@@ -82,27 +89,28 @@ if __name__ == '__main__':
 		pred = torch.argmax(logits, dim=-1).cpu().numpy()
 		lbls = lbls.cpu().numpy()
 		eq = (pred == lbls)
-		print(eq.shape, 'eq')
 		acc = eq[lbls > -1]
 
-		print('train', it, loss.item(), acc.mean(), flush=True)
+		print('train', it, loss.item(), acc.mean(), miou(lbls, pred, num_classes), flush=True)
 
-		if it % 5000 == 100000:
-			torch.save(netG.state_dict(), './netG_%d.pth' % it)
-			torch.save(netG.state_dict(), './netG_latest.pth')
-			torch.save(linear.state_dict(), './linear_%d.pth' % it)
-			torch.save(linear.state_dict(), './linear_latest.pth')
+		if it % 5000 == batch_size:
+			# torch.save(netG.state_dict(), './netG_%d.pth' % it)
+			# torch.save(netG.state_dict(), './netG_latest.pth')
+			# torch.save(linear.state_dict(), './linear_%d.pth' % it)
+			# torch.save(linear.state_dict(), './linear_latest.pth')
 
 			_, imgs, lbls = next(val_data_loader)
 			features = netG(imgs.cuda()).permute(0, 2, 3, 1)
-			logits = linear(features).reshape(-1, 40)
-			lbls = lbls.long().cuda().reshape(-1)
+			logits = linear(features.reshape(-1, feature_dim))
+			lbls = lbls.reshape(-1)
 			loss = criterion(logits, lbls)
-			# pred = torch.argmax(logits, dim=-1).cpu().numpy()
-			# lbls = lbls.cpu().numpy()
-			# acc = (pred == lbls)[lbls < 255], acc.mean()
+			
+			pred = torch.argmax(logits, dim=-1).cpu().numpy()
+			lbls = lbls.cpu().numpy()
+			eq = (pred == lbls)
+			acc = eq[lbls > -1]
 
-			print('val', it, loss.item(), flush=True)
+			print('val', it, loss.item(), acc.mean(), miou(lbls, pred, num_classes), flush=True)
 
 
 
