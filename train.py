@@ -93,12 +93,13 @@ if __name__ == '__main__':
 
 		print('train', it, loss.item(), acc.mean(), miou(lbls, pred, num_classes), flush=True)
 
-		if it % 5000 == batch_size:
-			# torch.save(netG.state_dict(), './netG_%d.pth' % it)
-			# torch.save(netG.state_dict(), './netG_latest.pth')
-			# torch.save(linear.state_dict(), './linear_%d.pth' % it)
-			# torch.save(linear.state_dict(), './linear_latest.pth')
+		if it % 5000 == 0:
+			torch.save(netG.state_dict(), './netG_%d.pth' % it)
+			torch.save(netG.state_dict(), './netG_latest.pth')
+			torch.save(linear.state_dict(), './linear_%d.pth' % it)
+			torch.save(linear.state_dict(), './linear_latest.pth')
 
+		if it % 500 == 0:
 			_, imgs, lbls = next(val_data_loader)
 			features = netG(imgs.cuda()).permute(0, 2, 3, 1)
 			logits = linear(features.reshape(-1, feature_dim))
@@ -111,9 +112,6 @@ if __name__ == '__main__':
 			acc = eq[lbls > -1]
 
 			print('val', it, loss.item(), acc.mean(), miou(lbls, pred, num_classes), flush=True)
-
-
-
 
 
 
