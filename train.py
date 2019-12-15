@@ -29,7 +29,9 @@ def create_data_loader(batch_size, mode, device='cuda:0', init_idx=0, seed=7):
 		img_li, lbl_li = [], []
 		for i in range(batch_size):
 			img_li.append(img_transform(Image.open(pairs[idx % len(pairs)][0])))
-			lbl_li.append(torch.from_numpy(np.array(Image.open(pairs[idx % len(pairs)][1]))))
+			lbl = np.array(Image.open(pairs[idx % len(pairs)][1])).astype(np.int32)
+			assert(lbl.min() >= 0 and lbl.max() <= 40)
+			lbl_li.append(torch.from_numpy(lbl - 1))
 			idx += 1
 		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).long().to(device)
 
@@ -52,7 +54,7 @@ if __name__ == '__main__':
 	netG = networks.define_G(input_nc=3, output_nc=feature_dim, nz=0, ngf=256, netG='unet_16', norm='batch', nl='relu',
 		use_dropout=True, init_type='xavier', init_gain=0.02, gpu_ids=[0], where_add='input', upsample='basic')
 	linear = nn.Linear(feature_dim, num_classes).cuda()
-	criterion = nn.CrossEntropyLoss(weight=None, size_average=None, ignore_index=255, reduce=None, reduction='mean')
+	criterion = nn.CrossEntropyLoss(weight=None, size_average=None, ignore_index=-1, reduce=None, reduction='mean')
 	optimizer = torch.optim.Adam(list(netG.parameters()) + list(linear.parameters()), lr=1e-4)
 
 	if False:
