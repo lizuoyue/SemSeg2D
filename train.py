@@ -33,7 +33,7 @@ def create_data_loader(batch_size, mode, device='cuda:0', init_idx=0, seed=7):
 			img_li.append(img_transform(Image.open(pairs[idx % len(pairs)][0])))
 			lbl_li.append(lbl_transform(Image.open(pairs[idx % len(pairs)][1])))
 			idx += 1
-		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).long().to(device)
+		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).to(device)
 
 
 
@@ -45,12 +45,15 @@ if __name__ == '__main__':
 		device = 'cpu'
 
 	batch_size = 4
+	feature_dim = 256
+	num_classes = 40
+
 	train_data_loader = create_data_loader(batch_size=batch_size, mode='train', device=device)
 	val_data_loader = create_data_loader(batch_size=batch_size, mode='val', device=device)
 
-	netG = networks.define_G(input_nc=3, output_nc=256, nz=0, ngf=256, netG='unet_16', norm='batch', nl='relu',
+	netG = networks.define_G(input_nc=3, output_nc=feature_dim, nz=0, ngf=256, netG='unet_16', norm='batch', nl='relu',
 		use_dropout=True, init_type='xavier', init_gain=0.02, gpu_ids=[0], where_add='input', upsample='basic')
-	linear = nn.Linear(256, 40).cuda()
+	linear = nn.Linear(feature_dim, num_classes).cuda()
 	criterion = nn.CrossEntropyLoss(weight=None, size_average=None, ignore_index=255, reduce=None, reduction='mean')
 	optimizer = torch.optim.Adam(list(netG.parameters()) + list(linear.parameters()), lr=1e-4)
 
@@ -72,7 +75,7 @@ if __name__ == '__main__':
 
 		features = netG(imgs.cuda()).permute(0, 2, 3, 1)
 		print(features.shape)
-		logits = linear(features.reshape(-1, 40))
+		logits = linear(features.reshape(-1, feature_dim))
 		print(logits.shape)
 
 		lbls = lbls.reshape(-1)
