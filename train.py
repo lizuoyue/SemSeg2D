@@ -15,8 +15,6 @@ def create_data_loader(batch_size, mode, device='cuda:0', init_idx=0, seed=7):
 		torchvision.transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
 	])
 
-	lbl_transform = torchvision.transforms.ToTensor()
-
 	imgs = sorted(glob.glob('/local/zoli/SemSeg2D/datasets/scannet_v2/%s/images/*/*.jpg' % mode))
 	lbls = sorted(glob.glob('/local/zoli/SemSeg2D/datasets/scannet_v2/%s/labels/*/*.png' % mode))
 	assert(len(imgs) == len(lbls))
@@ -31,9 +29,9 @@ def create_data_loader(batch_size, mode, device='cuda:0', init_idx=0, seed=7):
 		img_li, lbl_li = [], []
 		for i in range(batch_size):
 			img_li.append(img_transform(Image.open(pairs[idx % len(pairs)][0])))
-			lbl_li.append(lbl_transform(Image.open(pairs[idx % len(pairs)][1])))
+			lbl_li.append(torch.fromarray(np.array(Image.open(pairs[idx % len(pairs)][1]))))
 			idx += 1
-		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).to(device)
+		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).long().to(device)
 
 
 
