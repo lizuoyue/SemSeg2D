@@ -1,24 +1,22 @@
-import os, glob, time
-import torch, torchvision
-import torch.nn as nn
+import os, glob, time, tqdm, random
 import numpy as np
 from PIL import Image
+
+import torch
+import torchvision
+import torch.nn as nn
+
 import networks
-import random
-import tqdm
 
+def create_data_loader(batch_size, mode, device='cuda:0', init_idx=0, seed=7):
 
+	img_transform = torchvision.transforms.Compose([
+		torchvision.transforms.ToTensor(),
+		torchvision.transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+	])
 
-img_transform = torchvision.transforms.Compose([
-	torchvision.transforms.ToTensor(),
-	torchvision.transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-])
+	lbl_transform = torchvision.transforms.ToTensor()
 
-lbl_transform = torchvision.transforms.ToTensor()
-
-t = time.time()
-
-def create_data_loader(batch_size, mode, init_idx=0, seed=7):
 	imgs = sorted(glob.glob('/local/zoli/SemSeg2D/datasets/scannet_v2/%s/images/*/*.jpg' % mode))
 	lbls = sorted(glob.glob('/local/zoli/SemSeg2D/datasets/scannet_v2/%s/labels/*/*.png' % mode))
 	assert(len(imgs) == len(lbls))
@@ -35,21 +33,25 @@ def create_data_loader(batch_size, mode, init_idx=0, seed=7):
 			img_li.append(img_transform(Image.open(pairs[idx % len(pairs)][0])))
 			lbl_li.append(lbl_transform(Image.open(pairs[idx % len(pairs)][1])))
 			idx += 1
-		yield idx, torch.stack(img_li, dim=0), torch.stack(lbl_li, dim=0)
+		yield idx, torch.stack(img_li, dim=0).to(device), torch.stack(lbl_li, dim=0).long().to(device)
 
 
 
 if __name__ == '__main__':
 
+	if torch.cuda.is_available():
+		device = 'cuda:0'
+	else:
+		device = 'cpu'
+
 	batch_size = 4
-	train_data_loader = create_data_loader(batch_size=batch_size, mode='train')
-	val_data_loader = create_data_loader(batch_size=batch_size, mode='val')
+	train_data_loader = create_data_loader(batch_size=batch_size, mode='train', device=device)
+	val_data_loader = create_data_loader(batch_size=batch_size, mode='val', device=device)
 
 	netG = networks.define_G(input_nc=3, output_nc=256, nz=0, ngf=256, netG='unet_16', norm='batch', nl='relu',
 		use_dropout=True, init_type='xavier', init_gain=0.02, gpu_ids=[0], where_add='input', upsample='basic')
 	linear = nn.Linear(256, 40).cuda()
 	criterion = nn.CrossEntropyLoss(weight=None, size_average=None, ignore_index=255, reduce=None, reduction='mean')
-
 	optimizer = torch.optim.Adam(list(netG.parameters()) + list(linear.parameters()), lr=1e-4)
 
 	if False:
@@ -61,9 +63,20 @@ if __name__ == '__main__':
 	while True:
 		optimizer.zero_grad()
 		it, imgs, lbls = next(train_data_loader)
+
+		print(it, imgs.shape, lbls.shape)
+		print(imgs.cpu().numpy())
+		print(lbls.cpu().numpy())
+
+		input()
+
 		features = netG(imgs.cuda()).permute(0, 2, 3, 1)
-		logits = linear(features).reshape(-1, 40)
-		lbls = lbls.long().cuda().reshape(-1)
+		print(features.shape)
+		logits = linear(features.reshape(-1, 40))
+		print(logits.shape)
+
+		lbls = lbls.reshape(-1)
+		print(lbls.shape)
 		loss = criterion(logits, lbls)
 
 		loss.backward()
@@ -75,7 +88,7 @@ if __name__ == '__main__':
 
 		print('train', it, loss.item(), flush=True)
 
-		if it % 5000 == batch_size:
+		if it % 5000 == 100000:
 			torch.save(netG.state_dict(), './netG_%d.pth' % it)
 			torch.save(netG.state_dict(), './netG_latest.pth')
 			torch.save(linear.state_dict(), './linear_%d.pth' % it)
