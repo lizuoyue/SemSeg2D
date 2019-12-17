@@ -5,7 +5,7 @@ from PIL import Image
 valid_label = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 24, 28, 33, 34, 36, 39}
 mapping = []
 v = 1
-for i in range(40):
+for i in range(41):
 	if i in valid_label:
 		mapping.append(v)
 		v += 1
