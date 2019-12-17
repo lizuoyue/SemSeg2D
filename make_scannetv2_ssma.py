@@ -40,7 +40,7 @@ tab20_list = [
 	[23, 190, 207],
 	[158, 218, 229],
 ]
-tab20_palette = [i for i in l for l in tab20_list]
+tab20_palette = [i for l in tab20_list for i in l]
 
 train_scene_names = [os.path.basename(x).replace('_vh_clean_2.pth', '')
 	for x in sorted(glob.glob('/media/root/data/ScanNet_v2_data/train/*_vh_clean_2.pth'))]
