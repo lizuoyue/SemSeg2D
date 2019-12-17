@@ -4,15 +4,16 @@ from PIL import Image
 
 valid_label = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 24, 28, 33, 34, 36, 39}
 mapping = []
-v = 0
+v = 1
 for i in range(41):
 	if i in valid_label:
 		mapping.append(v)
 		v += 1
 	else:
-		mapping.append(20)
+		mapping.append(0)
 
 tab20_list = [
+	[0, 0, 0],
 	[31, 119, 180],
 	[174, 199, 232],
 	[255, 127, 14],
@@ -33,7 +34,6 @@ tab20_list = [
 	[219, 219, 141],
 	[23, 190, 207],
 	[158, 218, 229],
-	[0, 0, 0],
 ]
 tab20_palette = [i for l in tab20_list for i in l]
 
@@ -54,7 +54,7 @@ dst_li = [dst_image_path, dst_depth_path, dst_label_path]
 os.makedirs('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/', exist_ok=True)
 for tv, scene_names in zip(['val', 'train'], [val_scene_names, train_scene_names]):
 	with open('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s.txt' % tv, 'w') as f:
-		for scene_name in tqdm.tqdm(scene_names):
+		for scene_name in tqdm.tqdm(scene_names[:10]):
 			for path in dst_li:
 				os.makedirs(path % (tv, scene_name), exist_ok=True)
 			li_files = [sorted(glob.glob(path % scene_name + '*')) for path in src_li]
