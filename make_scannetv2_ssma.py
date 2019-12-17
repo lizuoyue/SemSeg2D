@@ -12,10 +12,6 @@ for i in range(41):
 	else:
 		mapping.append(0)
 
-def f(x):
-	return mapping[x]
-vf = np.vectorize(f)
-
 tab20_list = [
 	[0, 0, 0],
 	[31, 119, 180],
@@ -77,7 +73,9 @@ for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names
 				depth.save(li[-1])
 				
 				label_basename = os.path.basename(label_file)
-				label = vf(np.array(Image.open(label_file)).astype(np.int32))
+				label = np.array(Image.open(label_file)).astype(np.int32)
+				for i in range(41):
+					label[label == i] = mapping[i]
 				label = Image.fromarray(label.astype(np.uint8)).resize((768, 384), resample=Image.NEAREST)
 				label.putpalette(tab20_palette)
 				li.append(dst_label_path % (tv, scene_name) + '/' + label_basename)
