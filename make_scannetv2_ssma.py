@@ -58,7 +58,7 @@ dst_li = [dst_image_path, dst_depth_path, dst_label_path]
 
 os.makedirs('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/', exist_ok=True)
 for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names]):
-	with open('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s.txt' % tv) as f:
+	with open('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s.txt' % tv, 'w') as f:
 		for scene_name in tqdm.tqdm(scene_names):
 			for path in dst_li:
 				os.makedirs(path % (tv, scene_name), exist_ok=True)
