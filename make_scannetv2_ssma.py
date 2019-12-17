@@ -13,8 +13,7 @@ for i in range(40):
 		mapping.append(0)
 
 def f(x):
-	for i in range(40):
-		x[x == i] == mapping[i]
+	return mapping[x]
 vf = np.vectorize(f)
 
 tab20_list = [
