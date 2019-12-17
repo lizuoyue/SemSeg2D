@@ -4,16 +4,15 @@ from PIL import Image
 
 valid_label = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 24, 28, 33, 34, 36, 39}
 mapping = []
-v = 1
+v = 0
 for i in range(41):
 	if i in valid_label:
 		mapping.append(v)
 		v += 1
 	else:
-		mapping.append(0)
+		mapping.append(20)
 
 tab20_list = [
-	[0, 0, 0],
 	[31, 119, 180],
 	[174, 199, 232],
 	[255, 127, 14],
@@ -34,6 +33,7 @@ tab20_list = [
 	[219, 219, 141],
 	[23, 190, 207],
 	[158, 218, 229],
+	[0, 0, 0],
 ]
 tab20_palette = [i for l in tab20_list for i in l]
 
