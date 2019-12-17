@@ -74,8 +74,7 @@ for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names
 				
 				label_basename = os.path.basename(label_file)
 				label = np.array(Image.open(label_file)).astype(np.int32)
-				for i in range(41):
-					label[label == i] = mapping[i]
+				label = np.take(mapping, label.reshape(-1)).reshape(label.shape)
 				label = Image.fromarray(label.astype(np.uint8)).resize((768, 384), resample=Image.NEAREST)
 				label.putpalette(tab20_palette)
 				li.append(dst_label_path % (tv, scene_name) + '/' + label_basename)
