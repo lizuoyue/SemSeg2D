@@ -52,15 +52,15 @@ dst_label_path = '/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s/label/%s'
 dst_li = [dst_image_path, dst_depth_path, dst_label_path]
 
 os.makedirs('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/', exist_ok=True)
-for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names]):
+for tv, scene_names in zip(['val', 'train'], [train_scene_names, val_scene_names]):
 	with open('/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s.txt' % tv, 'w') as f:
-		for scene_name in scene_names:
+		for scene_name in tqdm.tqdm(scene_names):
 			for path in dst_li:
 				os.makedirs(path % (tv, scene_name), exist_ok=True)
 			li_files = [sorted(glob.glob(path % scene_name + '*')) for path in src_li]
 			assert(len(li_files[0]) == len(li_files[2]))
 			assert(len(li_files[1]) == len(li_files[2]))
-			for image_file, depth_file, label_file in tqdm.tqdm(list(zip(li_files[0], li_files[1], li_files[2]))):
+			for image_file, depth_file, label_file in list(zip(li_files[0], li_files[1], li_files[2])):
 				li = []
 				image_basename = os.path.basename(image_file).replace('.jpg', '.png')
 				image = Image.open(image_file).resize((768, 384), resample=Image.BILINEAR)
