@@ -67,8 +67,8 @@ val_scene_names = [os.path.basename(x).replace('_vh_clean_2.pth', '')
 
 src_image_path = '/local/zoli/3DMV/data/scannetv2_images/%s/color/'
 src_label_path = '/local/zoli/3DMV/data/scannetv2_images/%s/label/'
-dst_image_path = '/local/zoli/SemSeg2D/datasets/scannet_v2/%s/images/%s'
-dst_label_path = '/local/zoli/SemSeg2D/datasets/scannet_v2/%s/labels/%s'
+dst_image_path = '/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s/images/%s'
+dst_label_path = '/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s/labels/%s'
 
 for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names]):
 	os.popen('mkdir -p /local/zoli/SemSeg2D/datasets/scannet_v2/%s/images' % tv)
