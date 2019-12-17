@@ -63,9 +63,8 @@ for tv, scene_names in zip(['train', 'val'], [train_scene_names, val_scene_names
 			for path in dst_li:
 				os.makedirs(path % (tv, scene_name), exist_ok=True)
 			li_files = [sorted(glob.glob(path % scene_name + '*')) for path in src_li]
-			print([len(item) for item in li_files])
-			assert(len(li_files[0]) == li_files[2])
-			assert(len(li_files[1]) == li_files[2])
+			assert(len(li_files[0]) == len(li_files[2]))
+			assert(len(li_files[1]) == len(li_files[2]))
 			for image_file, depth_file, label_file in zip(li_files[0], li_files[1], li_files[2]):
 				li = []
 				image_basename = os.path.basename(image_file).replace('.jpg', '.png')
