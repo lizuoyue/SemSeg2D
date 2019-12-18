@@ -63,10 +63,10 @@ for tv, scene_names in zip(['val', 'train'], [val_scene_names, train_scene_names
 			assert(len(li_files[1]) == len(li_files[2]))
 			for image_file, depth_file, label_file in list(zip(li_files[0], li_files[1], li_files[2])):
 				li = []
-				image_basename = os.path.basename(image_file).replace('.jpg', '.png')
-				image = Image.open(image_file).resize((768, 384), resample=Image.BILINEAR)
+				# image_basename = os.path.basename(image_file).replace('.jpg', '.png')
+				# image = Image.open(image_file).resize((768, 384), resample=Image.BILINEAR)
 				li.append(dst_image_path % (tv, scene_name) + '/' + image_basename)
-				image.save(li[-1])
+				# image.save(li[-1])
 
 				depth_basename = os.path.basename(depth_file)
 				depth = Image.open(depth_file).resize((768, 384), resample=Image.BILINEAR)
@@ -80,7 +80,7 @@ for tv, scene_names in zip(['val', 'train'], [val_scene_names, train_scene_names
 				# label = np.take(mapping, label.reshape(-1)).reshape(label.shape)
 				# label = Image.fromarray(label.astype(np.uint8)).resize((768, 384), resample=Image.NEAREST)
 				# label.putpalette(tab20_palette)
-				# li.append(dst_label_path % (tv, scene_name) + '/' + label_basename)
+				li.append(dst_label_path % (tv, scene_name) + '/' + label_basename)
 				# label.save(li[-1])
 				f.write('%s %s %s\n' % tuple(li))
 
