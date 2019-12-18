@@ -44,7 +44,7 @@ val_scene_names = [os.path.basename(x).replace('_vh_clean_2.pth', '')
 	for x in sorted(glob.glob('/media/root/data/ScanNet_v2_data/val/*_vh_clean_2.pth'))]
 
 src_image_path = '/local/zoli/3DMV/data/scannetv2_images/%s/color/'
-src_depth_path = '/local/zoli/3DMV/data/scannetv2_images/%s/depth/'
+src_depth_path = '/local/zoli/3DMV/data/scannetv2_images/%s/depth_filled/'
 src_label_path = '/local/zoli/3DMV/data/scannetv2_images/%s/label/'
 src_li = [src_image_path, src_depth_path, src_label_path]
 dst_image_path = '/local/zoli/SemSeg2D/datasets/scannet_v2_ssma/%s/image/%s'
