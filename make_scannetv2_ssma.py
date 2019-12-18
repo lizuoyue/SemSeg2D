@@ -1,6 +1,7 @@
 import numpy as np
 import os, glob, tqdm, time
 from PIL import Image
+import cv2
 
 valid_label = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 24, 28, 33, 34, 36, 39}
 mapping = []
@@ -69,8 +70,10 @@ for tv, scene_names in zip(['val', 'train'], [val_scene_names, train_scene_names
 
 				depth_basename = os.path.basename(depth_file)
 				depth = Image.open(depth_file).resize((768, 384), resample=Image.BILINEAR)
+				depth = np.clip(np.array(depth, np.float) / 7000.0 * 255.0, 0, 255).astype(np.uint8)
+				depth = cv2.applyColorMap(depth, cv2.COLORMAP_JET)
 				li.append(dst_depth_path % (tv, scene_name) + '/' + depth_basename)
-				depth.save(li[-1])
+				cv2.imwrite(li[-1], depth)
 				
 				label_basename = os.path.basename(label_file)
 				label = np.array(Image.open(label_file)).astype(np.int32)
