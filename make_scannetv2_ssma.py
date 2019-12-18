@@ -75,13 +75,13 @@ for tv, scene_names in zip(['val', 'train'], [val_scene_names, train_scene_names
 				li.append(dst_depth_path % (tv, scene_name) + '/' + depth_basename)
 				cv2.imwrite(li[-1], depth)
 				
-				label_basename = os.path.basename(label_file)
-				label = np.array(Image.open(label_file)).astype(np.int32)
-				label = np.take(mapping, label.reshape(-1)).reshape(label.shape)
-				label = Image.fromarray(label.astype(np.uint8)).resize((768, 384), resample=Image.NEAREST)
-				label.putpalette(tab20_palette)
-				li.append(dst_label_path % (tv, scene_name) + '/' + label_basename)
-				label.save(li[-1])
+				# label_basename = os.path.basename(label_file)
+				# label = np.array(Image.open(label_file)).astype(np.int32)
+				# label = np.take(mapping, label.reshape(-1)).reshape(label.shape)
+				# label = Image.fromarray(label.astype(np.uint8)).resize((768, 384), resample=Image.NEAREST)
+				# label.putpalette(tab20_palette)
+				# li.append(dst_label_path % (tv, scene_name) + '/' + label_basename)
+				# label.save(li[-1])
 				f.write('%s %s %s\n' % tuple(li))
 
 
